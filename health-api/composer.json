@@ -1,0 +1,5 @@
+{
+  "name": "healthinsight/backend",
+  "description": "PHP proxy for Infermedica API",
+  "require": {}
+}

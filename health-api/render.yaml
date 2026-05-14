@@ -1,6 +1,6 @@
 services:
   - type: web
     name: healthinsight-backend
-    env: php
+    runtime: php
     buildCommand: ""
-    startCommand: ""
+    startCommand: "php -S 0.0.0.0:$PORT"

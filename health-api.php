@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 /*
 |--------------------------------------------------------------------------
-| INFERMEDICA CREDENTIALS FROM RAILWAY ENVIRONMENT VARIABLES
+| GET INFERMEDICA CREDENTIALS FROM RAILWAY VARIABLES
 |--------------------------------------------------------------------------
 */
 $app_id  = getenv('APP_ID');
@@ -70,6 +70,13 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
 ]);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($input));
 
+/* Force HTTP/1.1 to avoid HTTP/2 PROTOCOL_ERROR */
+curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+
+/* Additional reliability settings */
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+
 $response = curl_exec($ch);
 
 /*
@@ -85,6 +92,11 @@ if (curl_errno($ch)) {
     exit();
 }
 
+/*
+|--------------------------------------------------------------------------
+| GET RESPONSE STATUS CODE
+|--------------------------------------------------------------------------
+*/
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
 /*

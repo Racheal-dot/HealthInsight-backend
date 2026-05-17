@@ -46,11 +46,41 @@ if (!$app_id || !$app_key) {
 $input = json_decode(file_get_contents("php://input"), true);
 
 if (!$input) {
+    http_response_code(400);
     echo json_encode([
         "error" => "No input data received"
     ]);
     exit();
 }
+
+/*
+|--------------------------------------------------------------------------
+| VALIDATE DISCLAIMER AGREEMENT
+|--------------------------------------------------------------------------
+| The frontend must send:
+| "agreeDisclaimer": true
+|--------------------------------------------------------------------------
+*/
+if (
+    !isset($input['agreeDisclaimer']) ||
+    $input['agreeDisclaimer'] !== true
+) {
+    http_response_code(400);
+    echo json_encode([
+        "error" => "You must agree to the medical disclaimer before continuing."
+    ]);
+    exit();
+}
+
+/*
+|--------------------------------------------------------------------------
+| REMOVE NON-INFERMEDICA FIELD
+|--------------------------------------------------------------------------
+| Infermedica does not recognize 'agreeDisclaimer',
+| so remove it before forwarding the request.
+|--------------------------------------------------------------------------
+*/
+unset($input['agreeDisclaimer']);
 
 /*
 |--------------------------------------------------------------------------
@@ -89,6 +119,7 @@ if (curl_errno($ch)) {
     echo json_encode([
         "error" => curl_error($ch)
     ]);
+    curl_close($ch);
     exit();
 }
 
@@ -98,6 +129,7 @@ if (curl_errno($ch)) {
 |--------------------------------------------------------------------------
 */
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+curl_close($ch);
 
 /*
 |--------------------------------------------------------------------------

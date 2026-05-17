@@ -1,6 +1,0 @@
-services:
-  - type: web
-    name: healthinsight-backend
-    env: php
-    buildCommand: ""
-    startCommand: ""
